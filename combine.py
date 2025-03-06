@@ -5,7 +5,7 @@ import pandas as pd
 import altair as alt
 import pickle
 from difflib import get_close_matches
-import os 
+import os
 import requests
 
 # Set page configuration
@@ -17,13 +17,13 @@ tab1, tab2 = st.tabs(["📊 Data Explorer", "🎥 Movie Recommender"])
 # Data Explorer Tab -----------------------------------------------------------
 with tab1:
     st.title('📊 Interactive Data Explorer')
-    
+
     # App description
     with st.expander('About this app'):
         st.markdown('**What can this app do?**')
-        st.info('This app shows the use of Pandas for data wrangling, Altair for chart creation and editable dataframe for data interaction.')
+        st.info('This app shows the use of Pandas for data wrangling, Altair for chart creation, and editable dataframe for data interaction.')
         st.markdown('**How to use the app?**')
-        st.warning('1. Select genres in the dropdown 2. Choose years with the slider. Generates an updated DataFrame and line plot.')
+        st.warning('1. Select genres in the dropdown. 2. Choose years with the slider. Generates an updated DataFrame and line plot.')
 
     # Load genre data
     df = pd.read_csv('movies_genres_summary.csv')
@@ -68,53 +68,57 @@ with tab2:
     st.write("Find movies similar to your favorite ones!")
 
     # Load recommendation data
-    MODEL_PATH =  'model.pkl'
+    MODEL_PATH = 'model.pkl'
     MODEL_URL = "https://drive.google.com/uc?export=download&id=1-rHxy8PsA0EXzKpUS8iRfS_HlHm8z3qw"
 
-# Download model only if it doesn't exist
-if not os.path.exists(MODEL_PATH):
-    response = requests.get(MODEL_URL, stream=True)
-    if response.status_code == 200:
-        with open(MODEL_PATH, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-    else:
-        raise Exception("Failed to download model. Check URL or permissions.")
-
-# Load the model correctly
-with open(MODEL_PATH, 'rb') as f:
-    model_data = pickle.load(f)
-
-    # Load pre-trained model and data
-    if not os.path.exists(MODEL_PATH):
-        response = requests.get(MODEL_URL)
-        with open(MODEL_PATH, "wb") as f:
-            f.write(response.content)
-    
-    with open(MODEL_PATH, 'rb') as f:
-        model_data = pickle.load(f)
-    
-    movies_data = model_data['movies_data']
-    similarity_matrix = model_data['similarity_matrix']
-    titles = movies_data['title'].tolist()
-
-    # Recommendation interface
-    movie_name = st.text_input("Enter your favorite movie name:", "").title()
-    
-    if st.button("Recommend"):
-        if movie_name:
-            close_matches = get_close_matches(movie_name, titles, n=1, cutoff=0.6)
-            if close_matches:
-                closest_match = close_matches[0]
-                movie_index = movies_data[movies_data['title'] == closest_match].index[0]
-                
-                similarity_scores = list(enumerate(similarity_matrix[movie_index]))
-                sorted_movies = sorted(similarity_scores, key=lambda x: x[1], reverse=True)[1:11]
-
-                st.subheader(f"Movies similar to '{closest_match}':")
-                for i, (index, score) in enumerate(sorted_movies):
-                    st.write(f"{i+1}. {movies_data.iloc[index]['title']} ({movies_data.iloc[index]['genres']})")
+    # Function to download model
+    def download_model(url, path):
+        if not os.path.exists(path):
+            st.info("Downloading the model. Please wait...")
+            response = requests.get(url, stream=True)
+            if response.status_code == 200:
+                with open(path, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                st.success("Model downloaded successfully!")
             else:
-                st.error("No close match found! Try another movie.")
-        else:
-            st.error("Please enter a movie name.")
+                st.error("Failed to download model. Check URL or permissions.")
+                return False
+        return True
+
+    # Download model if not available
+    if download_model(MODEL_URL, MODEL_PATH):
+        try:
+            with open(MODEL_PATH, 'rb') as f:
+                model_data = pickle.load(f)
+            
+            # Extract data
+            movies_data = model_data['movies_data']
+            similarity_matrix = model_data['similarity_matrix']
+            titles = movies_data['title'].tolist()
+
+            # Recommendation interface
+            movie_name = st.text_input("Enter your favorite movie name:", "").title()
+
+            if st.button("Recommend"):
+                if movie_name:
+                    close_matches = get_close_matches(movie_name, titles, n=1, cutoff=0.6)
+                    if close_matches:
+                        closest_match = close_matches[0]
+                        movie_index = movies_data[movies_data['title'] == closest_match].index[0]
+
+                        similarity_scores = list(enumerate(similarity_matrix[movie_index]))
+                        sorted_movies = sorted(similarity_scores, key=lambda x: x[1], reverse=True)[1:11]
+
+                        st.subheader(f"Movies similar to '{closest_match}':")
+                        for i, (index, score) in enumerate(sorted_movies):
+                            st.write(f"{i+1}. {movies_data.iloc[index]['title']} ({movies_data.iloc[index]['genres']})")
+                    else:
+                        st.error("No close match found! Try another movie.")
+                else:
+                    st.error("Please enter a movie name.")
+
+        except Exception as e:
+            st.error(f"Error loading model: {e}")
+            st.error("Ensure the model file is valid and contains the correct data structure.")
+
