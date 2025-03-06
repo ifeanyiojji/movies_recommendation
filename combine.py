@@ -5,6 +5,8 @@ import pandas as pd
 import altair as alt
 import pickle
 from difflib import get_close_matches
+import os 
+import requests
 
 # Set page configuration
 st.set_page_config(page_title='Movie Analysis Suite', page_icon='🎬')
