@@ -69,7 +69,21 @@ with tab2:
 
     # Load recommendation data
     MODEL_PATH =  'model.pkl'
-    MODEL_URL = "https://drive.google.com/file/d/1-rHxy8PsA0EXzKpUS8iRfS_HlHm8z3qw/view?usp=sharing"
+    MODEL_URL = "https://drive.google.com/uc?export=download&id=1-rHxy8PsA0EXzKpUS8iRfS_HlHm8z3qw"
+
+# Download model only if it doesn't exist
+if not os.path.exists(MODEL_PATH):
+    response = requests.get(MODEL_URL, stream=True)
+    if response.status_code == 200:
+        with open(MODEL_PATH, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+    else:
+        raise Exception("Failed to download model. Check URL or permissions.")
+
+# Load the model correctly
+with open(MODEL_PATH, 'rb') as f:
+    model_data = pickle.load(f)
 
     # Load pre-trained model and data
     if not os.path.exists(MODEL_PATH):
