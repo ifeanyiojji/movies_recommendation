@@ -66,8 +66,17 @@ with tab2:
     st.write("Find movies similar to your favorite ones!")
 
     # Load recommendation data
-    with open("model.pkl", "rb") as file:
-        model_data = pickle.load(file)
+    MODEL_PATH =  'model.pkl'
+    MODEL_URL = "https://drive.google.com/file/d/1-rHxy8PsA0EXzKpUS8iRfS_HlHm8z3qw/view?usp=sharing"
+
+    # Load pre-trained model and data
+    if not os.path.exists(MODEL_PATH):
+        response = requests.get(MODEL_URL)
+        with open(MODEL_PATH, "wb") as f:
+            f.write(response.content)
+    
+    with open(MODEL_PATH, 'rb') as f:
+        model_data = pickle.load(f)
     
     movies_data = model_data['movies_data']
     similarity_matrix = model_data['similarity_matrix']
