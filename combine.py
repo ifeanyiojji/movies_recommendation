@@ -6,7 +6,7 @@ import altair as alt
 import pickle
 from difflib import get_close_matches
 import os
-import requests
+import gdown
 
 # Set page configuration
 st.set_page_config(page_title='Movie Analysis Suite', page_icon='🎬')
@@ -69,31 +69,22 @@ with tab2:
 
     # Load recommendation data
     MODEL_PATH = 'model.pkl'
-    # Use the direct download link format for Google Drive
-    MODEL_URL = "https://drive.google.com/uc?export=download&id=1-rHxy8PsA0EXzKpUS8iRfS_HlHm8z3qw"
+    MODEL_URL = "https://drive.google.com/uc?id=1-rHxy8PsA0EXzKpUS8iRfS_HlHm8z3qw"
 
     # Function to download model
     def download_model(url, path):
         if not os.path.exists(path):
             st.info("Downloading the model. Please wait...")
-            response = requests.get(url, stream=True)
-            if response.status_code == 200:
-                with open(path, "wb") as f:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        f.write(chunk)
+            try:
+                gdown.download(url, path, quiet=False)
                 st.success("Model downloaded successfully!")
-            else:
-                st.error("Failed to download model. Check URL or permissions.")
+            except Exception as e:
+                st.error(f"Failed to download model: {e}")
                 return False
         return True
 
     # Download model if not available
     if download_model(MODEL_URL, MODEL_PATH):
-        # Debug: Check the first 100 bytes of the file to see if it's valid
-        with open(MODEL_PATH, "rb") as f:
-            head = f.read(100)
-            st.write("File head:", head)
-            
         try:
             with open(MODEL_PATH, 'rb') as f:
                 model_data = pickle.load(f)
