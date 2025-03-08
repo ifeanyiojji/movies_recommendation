@@ -69,7 +69,9 @@ with tab2:
 
     # Load recommendation data
     MODEL_PATH = 'model.pkl'
+    # Use the direct download link format for Google Drive
     MODEL_URL = "https://drive.google.com/uc?export=download&id=1-rHxy8PsA0EXzKpUS8iRfS_HlHm8z3qw"
+
     # Function to download model
     def download_model(url, path):
         if not os.path.exists(path):
@@ -87,6 +89,11 @@ with tab2:
 
     # Download model if not available
     if download_model(MODEL_URL, MODEL_PATH):
+        # Debug: Check the first 100 bytes of the file to see if it's valid
+        with open(MODEL_PATH, "rb") as f:
+            head = f.read(100)
+            st.write("File head:", head)
+            
         try:
             with open(MODEL_PATH, 'rb') as f:
                 model_data = pickle.load(f)
