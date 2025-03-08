@@ -69,7 +69,7 @@ with tab2:
 
     # Load recommendation data
     MODEL_PATH = 'model.pkl'
-    MODEL_URL = "https://drive.google.com/uc?export=download&id=1-rHxy8PsA0EXzKpUS8iRfS_HlHm8z3qw"
+    MODEL_URL = "https://drive.usercontent.google.com/download?id=1-rHxy8PsA0EXzKpUS8iRfS_HlHm8z3qw&export=download&authuser=0&confirm=t&uuid=d60f9bdf-f433-4ba5-935c-ae161049734f&at=AEz70l52BjzQUiRCVlBei_v790Wt:1741422763643"
 
     # Function to download model
     def download_model(url, path):
