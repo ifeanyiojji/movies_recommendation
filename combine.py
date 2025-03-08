@@ -121,4 +121,3 @@ with tab2:
         except Exception as e:
             st.error(f"Error loading model: {e}")
             st.error("Ensure the model file is valid and contains the correct data structure.")
-
