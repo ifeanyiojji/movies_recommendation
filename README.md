@@ -71,17 +71,18 @@ streamlit run combine.py
 
 movie-recommendation-system/
 │
-├── app.py                    # Main Streamlit app for movie recommendations
-├── combine.py                # Script for combining and preprocessing features
-├── eda_streamlit.py          # Streamlit app for Exploratory Data Analysis
-├── Movie_Recomendation.ipynb # Development notebook for prototyping
+├── app.py                    # 🎬 Main Streamlit app for movie recommendation
+├── combine.py                # 🧩 Feature engineering script to merge datasets
+├── eda_streamlit.py          # 📊 Streamlit app for Exploratory Data Analysis
+├── Movie_Recomendation.ipynb # 📓 Jupyter Notebook for development & prototyping
 │
-├── movies.csv                # Original dataset containing movie details
-├── movies_genres_summary.csv # Processed dataset with genre summaries
+├── movies.csv                # 📂 Raw dataset containing movie metadata
+├── movies_genres_summary.csv # 📂 Processed genre data for recommendations
 │
-├── requirements.txt          # Python dependencies
-├── .gitignore                # Files and folders to be ignored by Git
-└── README.md                 # Project documentation
+├── requirements.txt          # 📦 Python dependency list
+├── .gitignore                # 🚫 Git ignore rules for unnecessary files
+└── README.md                 # 📘 Project documentation
+
 
 
 
